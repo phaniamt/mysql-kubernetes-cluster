@@ -143,3 +143,107 @@ https://www.ryadel.com/en/mysql-master-master-replication-setup-in-5-easy-steps/
 ### Deploy the statefulset ###
 
     kubectl apply -f https://raw.githubusercontent.com/phaniamt/mysql-kubernetes-cluster/master/mysql-sts.yaml
+
+
+
+    ### Connect to  mysql-0 pod ###
+
+    kubectl exec -it mysql-0 bash
+
+
+    root@mysql-0:/# mysql -u root -p
+
+
+    # Crete a user replicator and grant full permissions to that user 
+
+
+    mysql> CREATE USER 'replicator'@'%' IDENTIFIED BY 'phani123';
+
+    mysql> GRANT REPLICATION SLAVE ON *.* TO 'replicator'@'%' IDENTIFIED BY 'phani123';
+
+
+    mysql> SHOW MASTER STATUS;
+    +------------------+----------+--------------+--------------------+-------------------+
+    | File             | Position | Binlog_Do_DB | Binlog_Ignore_DB   | Executed_Gtid_Set |
+    +------------------+----------+--------------+--------------------+-------------------+
+    | mysql-bin.000003 |      694 |              | information_schema |                   |
+    +------------------+----------+--------------+--------------------+-------------------+
+    1 row in set (0.00 sec)
+
+
+
+
+    ### Connect to mysql-1 pod ###
+
+    kubectl exec -it mysql-1 bash
+
+    root@mysql-1:/# mysql -u root -p
+
+
+    # Crete a user replicator and grant full permissions to that user
+
+
+    mysql> CREATE USER 'replicator'@'%' IDENTIFIED BY 'phani123';
+
+    mysql> GRANT REPLICATION SLAVE ON *.* TO 'replicator'@'%' IDENTIFIED BY 'phani123';
+
+    ## Sync the data from mysql-0 to mysql-1 
+
+    mysql> STOP SLAVE;
+
+    # Get the MASTER_LOG_FILE and MASTER_LOG_POS from mysql-0 pod master status
+
+    mysql> MASTER TO MASTER_HOST = 'mysql-0.mysql', MASTER_USER = 'replicator', MASTER_PASSWORD = 'phani123', MASTER_LOG_FILE = 'mysql-bin.000003', MASTER_LOG_POS = 694; 
+
+    mysql> START SLAVE;
+
+    ## Now data can able to sync from mysql-0 to mysql-1
+
+
+
+
+    mysql> SHOW MASTER STATUS;
+    +------------------+----------+--------------+--------------------+-------------------+
+    | File             | Position | Binlog_Do_DB | Binlog_Ignore_DB   | Executed_Gtid_Set |
+    +------------------+----------+--------------+--------------------+-------------------+
+    | mysql-bin.000003 |      694 |              | information_schema |                   |
+    +------------------+----------+--------------+--------------------+-------------------+
+    1 row in set (0.00 sec)
+
+
+
+
+
+    ### Connect to  mysql-0 pod ###
+
+    kubectl exec -it mysql-0 bash
+
+
+    root@mysql-0:/# mysql -u root -p
+
+    ## Sync the data from mysql-1 to mysql-0 
+
+
+    # Get the MASTER_LOG_FILE and MASTER_LOG_POS from mysql-1 pod master status
+
+    mysql> MASTER TO MASTER_HOST = 'mysql-1.mysql', MASTER_USER = 'replicator', MASTER_PASSWORD = 'phani123', MASTER_LOG_FILE = 'mysql-bin.000003', MASTER_LOG_POS = 694; 
+
+    mysql> START SLAVE;
+
+    ## Now data can able to sync from mysql-0 to mysql-1
+
+    #### Test the Data sync ###
+
+    mysql>  SHOW DATABASES;
+
+
+    kubectl run mysql-client --image=mysql:5.7 -i --rm --restart=Never --\
+      mysql -h mysql-db  -u root -pphani <<EOF
+    CREATE DATABASE test;
+    CREATE TABLE test.messages (message VARCHAR(250));
+    INSERT INTO test.messages VALUES ('hello');
+    EOF
+
+
+    kubectl run mysql-client --image=mysql:5.7 -i -t --rm --restart=Never --\
+      mysql -h mysql-db -u -pphani -e "SELECT * FROM test.messages"
