@@ -144,7 +144,7 @@ https://www.ryadel.com/en/mysql-master-master-replication-setup-in-5-easy-steps/
 
     kubectl apply -f https://raw.githubusercontent.com/phaniamt/mysql-kubernetes-cluster/master/mysql-sts.yaml
 
-
+### Create the master to master replication ### 
 
     ### Connect to  mysql-0 pod ###
 
