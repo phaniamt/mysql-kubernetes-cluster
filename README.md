@@ -1,5 +1,11 @@
 # mysql-kubernetes-cluster
 
+### Reference URLs
+
+https://www.howtoforge.com/tutorial/how-to-setup-mysql-master-master-replication/
+
+https://www.ryadel.com/en/mysql-master-master-replication-setup-in-5-easy-steps/
+
 ### Create configmap for mysql DB ###
 
     apiVersion: v1
