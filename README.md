@@ -57,3 +57,6 @@
         port: 3306
       selector:
         app: mysql
+### Create the services ###
+
+    kubectl apply -f https://raw.githubusercontent.com/phaniamt/mysql-kubernetes-cluster/master/mysql-services.yaml
