@@ -23,3 +23,6 @@
         binlog-ignore-db=information_schema
         replicate-ignore-db=information_schema
         relay-log="mysql-relay-log"
+### Create the configmap ###
+
+    kubectl apply -f https://raw.githubusercontent.com/phaniamt/mysql-kubernetes-cluster/master/mysql-configmap.yaml
