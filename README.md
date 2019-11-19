@@ -133,3 +133,7 @@
           resources:
             requests:
               storage: 1Gi
+
+### Deploy the statefulset ###
+
+    kubectl apply -f https://raw.githubusercontent.com/phaniamt/mysql-kubernetes-cluster/master/mysql-sts.yaml
