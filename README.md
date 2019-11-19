@@ -29,7 +29,7 @@
 
 ### Create two services for mysql.### 
 ### services for stable DNS entries of StatefulSet members and connect the applications to db. ###
-# Headless service for stable DNS entries of StatefulSet members.
+    # Headless service for stable DNS entries of StatefulSet members.
     apiVersion: v1
     kind: Service
     metadata:
