@@ -26,3 +26,34 @@
 ### Create the configmap ###
 
     kubectl apply -f https://raw.githubusercontent.com/phaniamt/mysql-kubernetes-cluster/master/mysql-configmap.yaml
+
+### Create two services for mysql.### 
+### services for stable DNS entries of StatefulSet members and connect the applications to db. ###
+# Headless service for stable DNS entries of StatefulSet members.
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: mysql
+      labels:
+        app: mysql
+    spec:
+      ports:
+      - name: mysql
+        port: 3306
+      clusterIP: None
+      selector:
+        app: mysql
+    # Connect to DB from applications 
+    ---
+    apiVersion: v1
+    kind: Service
+    metadata:
+      name: mysql-db
+      labels:
+        app: mysql
+    spec:
+      ports:
+      - name: mysql
+        port: 3306
+      selector:
+        app: mysql
