@@ -225,7 +225,8 @@ https://www.ryadel.com/en/mysql-master-master-replication-setup-in-5-easy-steps/
 
 
     # Get the MASTER_LOG_FILE and MASTER_LOG_POS from mysql-1 pod master status
-
+    mysql> STOP SLAVE;
+    
     mysql> CHANGE MASTER TO MASTER_HOST = 'mysql-1.mysql', MASTER_USER = 'replicator', MASTER_PASSWORD = 'phani123', MASTER_LOG_FILE = 'mysql-bin.000003', MASTER_LOG_POS = 694; 
 
     mysql> START SLAVE;
